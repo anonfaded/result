@@ -4,7 +4,7 @@ document.getElementById('searchForm').addEventListener('submit', function (e) {
     const studentName = document.getElementById('studentName').value.trim().toUpperCase();
     const fatherName = document.getElementById('fatherName').value.trim().toUpperCase();
     const pdfName = `${studentName} ${fatherName}.pdf`;
-    const pdfPath = `pdfs/${pdfName}`;
+    const pdfPath = `results/${pdfName}`;
   
     // Check if the PDF exists
     fetch(pdfPath)
