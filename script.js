@@ -1,22 +1,22 @@
 document.getElementById('searchForm').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  // Normalize the input values
+  // Normalize the input values: trim, replace multiple spaces, and lowercase
   const studentName = document.getElementById('studentName').value
       .trim()
       .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-      .toLowerCase(); // Convert to lowercase
+      .toLowerCase();
   const fatherName = document.getElementById('fatherName').value
       .trim()
       .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-      .toLowerCase(); // Convert to lowercase
+      .toLowerCase();
 
   // Generate the normalized PDF name
   const pdfName = `${studentName} ${fatherName}.pdf`.toLowerCase();
   const pdfPath = `results/${encodeURIComponent(pdfName)}`; // Encode spaces and special characters
 
   // Check if the PDF exists
-  fetch(pdfPath)
+  fetch(pdfPath, { method: 'HEAD' }) // Use HEAD to check if the file exists without downloading it
       .then(response => {
           if (response.ok) {
               document.getElementById('result').innerHTML = `
