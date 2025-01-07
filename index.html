@@ -3,21 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Result Finder</title>
+  <title>
+    Download Your Certificate 
+    <br>
+    اپنا سرٹیفکیٹ ڈاؤن لوڈ کریں
+  </title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Noto+Sans+Arabic:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Student Result Finder</h1>
+  <div class="container animate-in">
+    <div class="header">
+      <h1>
+        Download Your Certificate 
+        <br>
+        اپنا سرٹیفکیٹ ڈاؤن لوڈ کریں
+      </h1>
+      <div class="divider"></div>
+    </div>
+    
     <form id="searchForm">
-      <label for="studentName">Student Name:</label>
-      <input type="text" id="studentName" name="studentName" required>
-      <label for="fatherName">Father Name:</label>
-      <input type="text" id="fatherName" name="fatherName" required>
-      <button type="submit">Search</button>
+      <div class="form-group">
+        <label for="studentName">
+          <span>Student Full Name / اسم طالب</span>
+        </label>
+        <input 
+          type="text" 
+          id="studentName" 
+          name="studentName" 
+          placeholder="e.g. John" 
+          required
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="fatherName">
+          <span>Father's Full Name / والد کا نام</span>
+        </label>
+        <input 
+          type="text" 
+          id="fatherName" 
+          name="fatherName" 
+          placeholder="e.g. Doe" 
+          required
+        >
+      </div>
+      
+      <button type="submit" class="material-button">
+        <span>Search Certificate / سرٹیفکیٹ تلاش کریں</span>
+        <span>🕵️‍♀️</span>
+      </button>
     </form>
+    
     <div id="result"></div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
