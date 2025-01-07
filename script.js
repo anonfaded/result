@@ -1,40 +1,55 @@
-document.getElementById('searchForm').addEventListener('submit', function (e) {
+document.getElementById('searchForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  // Get and normalize input values
-  const studentName = document.getElementById('studentName').value.trim().toUpperCase();
-  const fatherName = document.getElementById('fatherName').value.trim().toUpperCase();
+  const studentName = document.getElementById('studentName').value.trim();
+  const fatherName = document.getElementById('fatherName').value.trim();
+  const resultDiv = document.getElementById('result');
 
-  // Fetch the list of filenames from the JSON file
-  fetch('results/files.json')
-      .then(response => response.json())
-      .then(files => {
-          // Try to find a matching file
-          const matchedFile = files.find(file => {
-              // Split the filename to extract student and father names
-              const [fileStudentName, fileFatherNameWithExt] = file.split(' ');
-              const fileFatherName = fileFatherNameWithExt.replace('.pdf', '').toUpperCase();
+  if (!studentName || !fatherName) {
+    resultDiv.textContent = "Please provide both Student Name and Father Name.";
+    return;
+  }
 
-              // Compare input values with the current file's names
-              return (
-                  fileStudentName.toUpperCase() === studentName &&
-                  fileFatherName.toUpperCase() === fatherName
-              );
-          });
+  // Combine names into a single file name
+  const combinedName = `${studentName} ${fatherName}`;
+  const encodedName = encodeURIComponent(combinedName); // Encode spaces as %20
 
-          // Show the result based on the match
-          if (matchedFile) {
-              const pdfPath = `results/${encodeURIComponent(matchedFile)}`;
-              document.getElementById('result').innerHTML = `
-                  <p>Result found!</p>
-                  <a href="${pdfPath}" download>Download Result</a>
-              `;
-          } else {
-              document.getElementById('result').innerHTML = `<p>Result not found.</p>`;
-          }
-      })
-      .catch(error => {
-          console.error('Error fetching files:', error);
-          document.getElementById('result').innerHTML = `<p>Error searching for the result.</p>`;
-      });
+  // GitHub repository details (replace as needed)
+  const repoOwner = "anonfaded"; // Dynamic username input can replace this
+  const repoName = "result";
+  const folderPath = "results";
+
+  const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+
+  try {
+    // Fetch list of files in the results folder
+    const response = await fetch(apiUrl, {
+      headers: { Accept: "application/vnd.github.v3+json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch files from GitHub: ${response.statusText}`);
+    }
+
+    const files = await response.json();
+
+    // Check for a matching file
+    const matchingFile = files.find(file => {
+      const fileName = file.name.toLowerCase();
+      return (
+        fileName === `${combinedName.toLowerCase()}.pdf` || // Match without encoding
+        fileName === `${encodedName.toLowerCase()}.pdf`     // Match with encoding
+      );
+    });
+
+    if (matchingFile) {
+      const fileUrl = `https://${repoOwner}.github.io/${repoName}/${folderPath}/${matchingFile.name}`;
+      resultDiv.innerHTML = `<a href="${fileUrl}" target="_blank">Download Result</a>`;
+    } else {
+      resultDiv.textContent = "No matching result found.";
+    }
+  } catch (error) {
+    console.error(error);
+    resultDiv.textContent = "An error occurred while searching. Please try again.";
+  }
 });
