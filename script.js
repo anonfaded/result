@@ -1,7 +1,7 @@
 document.getElementById('searchForm').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  // Get input values and normalize spaces
+  // Normalize input values
   const studentName = document.getElementById('studentName').value
       .trim()
       .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
@@ -11,9 +11,9 @@ document.getElementById('searchForm').addEventListener('submit', function (e) {
       .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
       .toUpperCase();
 
-  // Generate PDF name and path
+  // Generate encoded PDF path
   const pdfName = `${studentName} ${fatherName}.pdf`;
-  const pdfPath = `results/${pdfName}`;
+  const pdfPath = `results/${encodeURIComponent(pdfName)}`; // Encode spaces
 
   // Check if the PDF exists
   fetch(pdfPath)
