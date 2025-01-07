@@ -1,24 +1,30 @@
 document.getElementById('searchForm').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  // Normalize the input values: trim, replace multiple spaces, and lowercase
-  const studentName = document.getElementById('studentName').value
-      .trim()
-      .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-      .toLowerCase();
-  const fatherName = document.getElementById('fatherName').value
-      .trim()
-      .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-      .toLowerCase();
+  // Get and normalize input values
+  const studentName = document.getElementById('studentName').value.trim().toUpperCase();
+  const fatherName = document.getElementById('fatherName').value.trim().toUpperCase();
 
-  // Generate the normalized PDF name
-  const pdfName = `${studentName} ${fatherName}.pdf`.toLowerCase();
-  const pdfPath = `results/${encodeURIComponent(pdfName)}`; // Encode spaces and special characters
+  // Fetch the list of filenames from the JSON file
+  fetch('results/files.json')
+      .then(response => response.json())
+      .then(files => {
+          // Try to find a matching file
+          const matchedFile = files.find(file => {
+              // Split the filename to extract student and father names
+              const [fileStudentName, fileFatherNameWithExt] = file.split(' ');
+              const fileFatherName = fileFatherNameWithExt.replace('.pdf', '').toUpperCase();
 
-  // Check if the PDF exists
-  fetch(pdfPath, { method: 'HEAD' }) // Use HEAD to check if the file exists without downloading it
-      .then(response => {
-          if (response.ok) {
+              // Compare input values with the current file's names
+              return (
+                  fileStudentName.toUpperCase() === studentName &&
+                  fileFatherName.toUpperCase() === fatherName
+              );
+          });
+
+          // Show the result based on the match
+          if (matchedFile) {
+              const pdfPath = `results/${encodeURIComponent(matchedFile)}`;
               document.getElementById('result').innerHTML = `
                   <p>Result found!</p>
                   <a href="${pdfPath}" download>Download Result</a>
@@ -27,7 +33,8 @@ document.getElementById('searchForm').addEventListener('submit', function (e) {
               document.getElementById('result').innerHTML = `<p>Result not found.</p>`;
           }
       })
-      .catch(() => {
+      .catch(error => {
+          console.error('Error fetching files:', error);
           document.getElementById('result').innerHTML = `<p>Error searching for the result.</p>`;
       });
 });
